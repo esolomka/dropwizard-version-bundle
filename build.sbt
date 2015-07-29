@@ -1,8 +1,8 @@
 name := "dropwizard-version-bundle"
 
-val baseVersion = "0.8"
+val baseVersion = "0.7"
 
-version := s"$baseVersion-SNAPSHOT"
+version := s"$baseVersion"
 
 organization := "fr.novapost.dropwizard-bundles"
 
@@ -63,8 +63,8 @@ val hidder08 = """package io.dropwizard.bundles
 
 
 val dropwizardInfo = baseVersion match {
-  case "0.6" => ("com.yammer.dropwizard" % "dropwizard-core" % s"$baseVersion.2", hidder06)
-  case _ => ("io.dropwizard" % "dropwizard-core" % s"$baseVersion.2", hidder08)
+  case "0.6" => ("com.yammer.dropwizard" % "dropwizard-core" % s"$baseVersion.0", hidder06)
+  case _ => ("io.dropwizard" % "dropwizard-core" % s"$baseVersion.0", hidder08)
 }
 
 
