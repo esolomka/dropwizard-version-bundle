@@ -26,34 +26,56 @@ publishTo := {
     Some("releases"  at nexus + "content/repositories/nova")
 }
 
-val dropwizard = baseVersion match {
-  case "0.6" => "com.yammer.dropwizard" % "dropwizard-core" % s"$baseVersion.2"
-  case _ => "io.dropwizard" % "dropwizard-core" % s"$baseVersion.2"
+
+
+val hidder06 = """package io.dropwizard.bundles
+                 |
+                 |import javax.servlet.http.HttpServlet
+                 |
+                 |package object version {
+                 |
+                 |  type Environment = com.yammer.dropwizard.config.Environment
+                 |  type Bootstrap[T <: com.yammer.dropwizard.config.Configuration] = com.yammer.dropwizard.config.Bootstrap[T]
+                 |  type Bundle = com.yammer.dropwizard.Bundle
+                 |
+                 |  def addEndpoint(environment : Environment, url : String)(servlet: HttpServlet) = {
+                 |    environment.addServlet(servlet, url)
+                 |  }
+                 |
+                 |}""".stripMargin
+
+val hidder08 = """package io.dropwizard.bundles
+                 |
+                 |import javax.servlet.http.HttpServlet
+                 |
+                 |package object version {
+                 |
+                 |  type Environment = io.dropwizard.setup.Environment
+                 |  type Bootstrap[T <: io.dropwizard.Configuration] = io.dropwizard.setup.Bootstrap[T]
+                 |  type Bundle = io.dropwizard.Bundle
+                 |
+                 |  def addEndpoint(environment : Environment, url : String)(servlet: HttpServlet) = {
+                 |    environment.servlets().addServlet("version", servlet).addMapping(url)
+                 |    environment.admin().addServlet("version", servlet).addMapping(url)
+                 |  }
+                 |
+                 |}""".stripMargin
+
+
+val dropwizardInfo = baseVersion match {
+  case "0.6" => ("com.yammer.dropwizard" % "dropwizard-core" % s"$baseVersion.2", hidder06)
+  case _ => ("io.dropwizard" % "dropwizard-core" % s"$baseVersion.2", hidder08)
 }
 
 
 libraryDependencies ++= List(
-  dropwizard,
+  dropwizardInfo._1,
   "org.mockito" % "mockito-core" % "1.10.8" % "test"
 )
 
-sourceGenerators in Compile <+= (sourceManaged in Compile, version) map { (d, v) =>
-  val file = d / "package.scala"
-  IO.write(file, """package io.dropwizard.bundles
-                   |
-                   |import javax.servlet.http.HttpServlet
-                   |
-                   |package object version {
-                   |
-                   |  type Environment = io.dropwizard.setup.Environment
-                   |  type Bootstrap[T <: io.dropwizard.Configuration] = io.dropwizard.setup.Bootstrap[T]
-                   |  type Bundle = io.dropwizard.Bundle
-                   |
-                   |  def addEndpoint(environment : Environment, url : String)(servlet: HttpServlet) = {
-                   |    environment.servlets().addServlet("version", servlet).addMapping(url)
-                   |    environment.admin().addServlet("version", servlet).addMapping(url)
-                   |  }
-                   |
-                   |}""".stripMargin.format(v))
+
+sourceGenerators in Compile <+= (sourceManaged in Compile) map { d =>
+  val file = d / "io/dropwizard/bundles/version/package.scala"
+  IO.write(file, dropwizardInfo._2)
   Seq(file)
 }
