@@ -1,6 +1,8 @@
 name := "dropwizard-version-bundle"
 
-version := "0.8-SNAPSHOT"
+val baseVersion = "0.8"
+
+version := s"$baseVersion-SNAPSHOT"
 
 organization := "fr.novapost.dropwizard-bundles"
 
@@ -24,8 +26,34 @@ publishTo := {
     Some("releases"  at nexus + "content/repositories/nova")
 }
 
+val dropwizard = baseVersion match {
+  case "0.6" => "com.yammer.dropwizard" % "dropwizard-core" % s"$baseVersion.2"
+  case _ => "io.dropwizard" % "dropwizard-core" % s"$baseVersion.2"
+}
+
 
 libraryDependencies ++= List(
-  "io.dropwizard" % "dropwizard-core" % "0.8.2",
+  dropwizard,
   "org.mockito" % "mockito-core" % "1.10.8" % "test"
 )
+
+sourceGenerators in Compile <+= (sourceManaged in Compile, version) map { (d, v) =>
+  val file = d / "package.scala"
+  IO.write(file, """package io.dropwizard.bundles
+                   |
+                   |import javax.servlet.http.HttpServlet
+                   |
+                   |package object version {
+                   |
+                   |  type Environment = io.dropwizard.setup.Environment
+                   |  type Bootstrap[T <: io.dropwizard.Configuration] = io.dropwizard.setup.Bootstrap[T]
+                   |  type Bundle = io.dropwizard.Bundle
+                   |
+                   |  def addEndpoint(environment : Environment, url : String)(servlet: HttpServlet) = {
+                   |    environment.servlets().addServlet("version", servlet).addMapping(url)
+                   |    environment.admin().addServlet("version", servlet).addMapping(url)
+                   |  }
+                   |
+                   |}""".stripMargin.format(v))
+  Seq(file)
+}

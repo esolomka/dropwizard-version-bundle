@@ -7,9 +7,8 @@ class VersionBundle(supplier: VersionSupplier) extends Bundle {
   override def initialize(bootstrap: Bootstrap[_]): Unit = {/*DO NOTHING*/}
 
   override def run(environment: Environment): Unit = {
-    val endpoint = new VersionServlet(supplier)
-    environment.servlets().addServlet("version", endpoint).addMapping(url)
-    environment.admin().addServlet("version", endpoint).addMapping(url)
-
+    addEndpoint(environment, url) {
+      new VersionServlet(supplier)
+    }
   }
 }
