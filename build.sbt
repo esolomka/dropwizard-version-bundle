@@ -69,8 +69,7 @@ val dropwizardInfo = baseVersion match {
 
 
 libraryDependencies ++= List(
-  dropwizardInfo._1,
-  "org.mockito" % "mockito-core" % "1.10.8" % "test"
+  dropwizardInfo._1
 )
 
 
