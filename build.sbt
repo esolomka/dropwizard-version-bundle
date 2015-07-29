@@ -1,8 +1,8 @@
 name := "dropwizard-version-bundle"
 
-val baseVersion = "0.8"
+val baseVersion = "0.7"
 
-version := s"$baseVersion-SNAPSHOT"
+version := s"$baseVersion"
 
 organization := "fr.novapost.dropwizard-bundles"
 
