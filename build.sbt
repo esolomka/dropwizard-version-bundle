@@ -1,6 +1,6 @@
 name := "dropwizard-version-bundle"
 
-val baseVersion = "0.8"
+val baseVersion = "0.7"
 
 version := s"$baseVersion.1"
 
