@@ -6,9 +6,17 @@ import io.dropwizard.bundles.version.{VersionInfo, VersionSupplier}
 
 class PropsVersionSupplier extends VersionSupplier {
 
+  var infos: Option[VersionInfo] = None
+
   override def info: VersionInfo = {
+    infos getOrElse versionInfo()
+  }
+
+  private def versionInfo() = {
     val pom = load("pom.properties")
-    VersionInfo(pom.getProperty("groupId"), pom.getProperty("artifactId"), pom.getProperty("version"))
+    val result = VersionInfo(pom.getProperty("groupId"), pom.getProperty("artifactId"), pom.getProperty("version"))
+    infos = Option(result)
+    result
   }
 
   private def load(file: String): Properties = {

@@ -1,8 +1,8 @@
 name := "dropwizard-version-bundle"
 
-val baseVersion = "0.7"
+val baseVersion = "0.8"
 
-version := s"$baseVersion"
+version := s"$baseVersion.1"
 
 organization := "fr.novapost.dropwizard-bundles"
 
@@ -46,6 +46,8 @@ val hidder06 = """package io.dropwizard.bundles
 
 val hidder08 = """package io.dropwizard.bundles
                  |
+                 |import java.util
+                 |import javax.servlet.{Filter, DispatcherType}
                  |import javax.servlet.http.HttpServlet
                  |
                  |package object version {
@@ -54,9 +56,10 @@ val hidder08 = """package io.dropwizard.bundles
                  |  type Bootstrap[T <: io.dropwizard.Configuration] = io.dropwizard.setup.Bootstrap[T]
                  |  type Bundle = io.dropwizard.Bundle
                  |
-                 |  def addEndpoint(environment : Environment, url : String)(servlet: HttpServlet) = {
+                 |  def addEndpoint(environment : Environment, url : String)(servlet: HttpServlet)(filter : Filter) = {
                  |    environment.servlets().addServlet("version", servlet).addMapping(url)
                  |    environment.admin().addServlet("version", servlet).addMapping(url)
+                 |    environment.admin().addFilter("VersionFilter", filter).addMappingForUrlPatterns(util.EnumSet.of(DispatcherType.REQUEST), true, "/*")
                  |  }
                  |
                  |}""".stripMargin
