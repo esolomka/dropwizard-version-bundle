@@ -11,7 +11,7 @@ class VersionFilter(val version: String) extends Filter {
 
   override def doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain): Unit = {
     if (request.isInstanceOf[HttpServletRequest]) {
-      response.asInstanceOf[HttpServletResponse].addHeader("version", version)
+      response.asInstanceOf[HttpServletResponse].addHeader("X-Version", version)
       chain.doFilter(request, response)
     }
   }
