@@ -1,6 +1,6 @@
 name := "dropwizard-version-bundle"
 
-val baseVersion = "0.8"
+val baseVersion = "0.6"
 
 version := s"$baseVersion.2"
 
@@ -31,6 +31,7 @@ publishTo := {
 val hidder06 = """package io.dropwizard.bundles
                  |
                  |import javax.servlet.http.HttpServlet
+                 |import javax.servlet.Filter
                  |
                  |package object version {
                  |
@@ -38,7 +39,7 @@ val hidder06 = """package io.dropwizard.bundles
                  |  type Bootstrap[T <: com.yammer.dropwizard.config.Configuration] = com.yammer.dropwizard.config.Bootstrap[T]
                  |  type Bundle = com.yammer.dropwizard.Bundle
                  |
-                 |  def addEndpoint(environment : Environment, url : String)(servlet: HttpServlet) = {
+                 |  def addEndpoint(environment : Environment, url : String)(servlet: HttpServlet)(filter : Filter) = {
                  |    environment.addServlet(servlet, url)
                  |  }
                  |
